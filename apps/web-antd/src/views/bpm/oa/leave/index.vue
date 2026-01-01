@@ -17,6 +17,7 @@ import { router } from '#/router';
 
 import { useGridColumns, useGridFormSchema } from './data';
 
+// TODO @jason：这里是不是要迁移下？
 /** 刷新表格 */
 function handleRefresh() {
   gridApi.query();
@@ -28,6 +29,16 @@ function handleCreate() {
     name: 'OALeaveCreate',
     query: {
       formType: 'create',
+    },
+  });
+}
+
+/** 重新发起请假 */
+function handleReCreate(row: BpmOALeaveApi.Leave) {
+  router.push({
+    name: 'OALeaveCreate',
+    query: {
+      id: row.id,
     },
   });
 }
@@ -160,8 +171,15 @@ const [Grid, gridApi] = useVbenVxeGrid({
               type: 'link',
               danger: true,
               icon: ACTION_ICON.DELETE,
-              ifShow: row.result === BpmProcessInstanceStatus.RUNNING,
+              ifShow: row.status === BpmProcessInstanceStatus.RUNNING,
               onClick: handleCancel.bind(null, row),
+            },
+            {
+              label: '重新发起',
+              type: 'link',
+              icon: ACTION_ICON.ADD,
+              ifShow: row.status !== BpmProcessInstanceStatus.RUNNING,
+              onClick: handleReCreate.bind(null, row),
             },
           ]"
         />
